@@ -75,7 +75,8 @@ if __name__ == '__main__':
     ignored_paths = [
         r'.+\.meta', 
         r'\.git\/.+', 
-        r'.*\/?upm-preparator.*'
+        r'.*\/?upm-preparator.*',
+        r'.*\/?temp.*',
     ]
 
     paths_dict = _get_file_paths('**', ignored_paths)
