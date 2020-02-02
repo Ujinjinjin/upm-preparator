@@ -44,6 +44,8 @@ if __name__ == '__main__':
     package_folder_regex = package_folder.replace(".", "\\.")
     package_folder_regex = f'{package_folder_regex}.*'
 
+    package_json_path = sys.argv[2]
+
     ignored_paths = [
         r'\.git\/.+',
         # r'.*\/?package\.json',
@@ -57,6 +59,7 @@ if __name__ == '__main__':
     _delete_paths(paths_to_delete)
 
     paths_to_move = _get_paths(f'{package_folder}/**', list())
+    paths_to_move.append(package_json_path)
     _move_from_package_folder_to_root(package_folder, paths_to_move)
 
     _remove_package_folder(package_folder)
