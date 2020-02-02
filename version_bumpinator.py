@@ -20,4 +20,4 @@ if __name__ == '__main__':
     with open(package_json_path, 'w', encoding='utf8') as file:
         json.dump(package_dict, file, indent=4)
     
-    os.system(f'echo ::set-env name=PCKG_VERSION::{new_version}')
+    os.system(f'echo ::set-env name=PKG_VERSION::{new_version}')
