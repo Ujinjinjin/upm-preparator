@@ -46,8 +46,8 @@ if __name__ == '__main__':
 
     ignored_paths = [
         r'\.git\/.+',
-        r'.*\/?package\.json',
-        r'.*\/?version\.json',
+        # r'.*\/?package\.json',
+        # r'.*\/?version\.json',
         r'.*\/?upm-preparator.*',
         r'.*\/?temp.*',
         package_folder_regex
