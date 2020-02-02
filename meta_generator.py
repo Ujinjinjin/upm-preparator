@@ -72,7 +72,7 @@ if __name__ == '__main__':
     script_path_items.append('templates')
     templates_folder = '/'.join(script_path_items)
 
-    ignored_paths = ['.+\.meta']
+    ignored_paths = [r'.+\.meta', r'\.git/.+']
     paths_dict = _get_file_paths('**', ignored_paths)
     templates = _get_meta_templates(templates_folder)
 
