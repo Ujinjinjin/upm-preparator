@@ -13,9 +13,11 @@ if __name__ == '__main__':
     with open(package_json_path, 'r', encoding='utf8') as file:
         package_dict = json.load(file)
 
-    package_dict['version'] = version_dict['version']
+    new_version = version_dict['version']
+
+    package_dict['version'] = new_version
 
     with open(package_json_path, 'w', encoding='utf8') as file:
         json.dump(package_dict, file, indent=4)
     
-    os.system(f'echo ::set-env name=PCKG_VERSION::{version_dict['version']}')
+    os.system(f'echo ::set-env name=PCKG_VERSION::{new_version}')
