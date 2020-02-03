@@ -50,7 +50,6 @@ if __name__ == '__main__':
         r'\.git\/.+',
         # r'.*\/?package\.json',
         # r'.*\/?version\.json',
-        r'.*\/?LICENCE',
         r'.*\/?upm-preparator.*',
         r'.*\/?temp.*',
         package_folder_regex
