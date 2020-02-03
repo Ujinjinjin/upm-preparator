@@ -1,7 +1,7 @@
 import glob
 import os
-import sys
 import re
+import sys
 from typing import List, Dict
 
 def _path_is_ignored(path: str, ignored_paths: List[str]) -> bool:
@@ -36,9 +36,6 @@ def _move_from_package_folder_to_root(package_folder: str, paths_to_move: List[s
         if len(new_path) > 0:
             os.replace(old_path, new_path)
 
-def _remove_package_folder(package_folder: str) -> None:
-    os.rmdir(package_folder)
-
 if __name__ == '__main__':
     package_folder = sys.argv[1]
     package_folder_regex = package_folder.replace(".", "\\.")
@@ -57,10 +54,6 @@ if __name__ == '__main__':
     paths_to_delete = _get_paths('**', ignored_to_delete_paths)
     _delete_paths(paths_to_delete)
 
-    print('Delete:')
-    print(paths_to_delete)
-    print()
-
     ignored_to_move_paths = [
         r'.*\/?package\.json',
         r'.*\/?version\.json',
@@ -68,10 +61,3 @@ if __name__ == '__main__':
 
     paths_to_move = _get_paths(f'{package_folder}/**', ignored_to_move_paths)
     _move_from_package_folder_to_root(package_folder, paths_to_move)
-
-    print('Move:')
-    print(paths_to_move)
-    print()
-
-    _remove_package_folder(package_folder)
-
