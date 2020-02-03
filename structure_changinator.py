@@ -57,8 +57,16 @@ if __name__ == '__main__':
     paths_to_delete = _get_paths('**', ignored_paths)
     _delete_paths(paths_to_delete)
 
+    print('Delete:')
+    print(paths_to_delete)
+    print()
+
     paths_to_move = _get_paths(f'{package_folder}/**', list())
     _move_from_package_folder_to_root(package_folder, paths_to_move)
+
+    print('Move:')
+    print(paths_to_delete)
+    print()
 
     _remove_package_folder(package_folder)
 
