@@ -65,7 +65,7 @@ if __name__ == '__main__':
     _move_from_package_folder_to_root(package_folder, paths_to_move)
 
     print('Move:')
-    print(paths_to_delete)
+    print(paths_to_move)
     print()
 
     _remove_package_folder(package_folder)
