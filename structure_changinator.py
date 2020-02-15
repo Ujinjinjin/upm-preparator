@@ -20,7 +20,7 @@ def _get_paths(root_path: str, ignored_paths: List[str], files_int_prior: bool =
         paths.append(path)
 
     if files_int_prior:
-        paths.sort(key=lambda x: os.path.isfile(x))
+        paths.sort(key=lambda x: not os.path.isfile(x))
 
     return paths
 
