@@ -2,3 +2,5 @@
 .vscode/
 
 .npmignore
+
+.idea/

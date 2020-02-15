@@ -6,13 +6,33 @@ import re
 from typing import List, Dict
 from enum import Enum
 
-class PathType(Enum):
-    CsScript = 1,
-    TextFile = 2,
-    Folder = 3
+
+class ImporterType(Enum):
+    Folder = 1,
+    Mono = 2,
+    Text = 3,
+    AsmDef = 4,
+    Default = 5
+
+
+MONO_IMPORTER_EXTENSIONS = [
+    '.cs'
+]
+
+TEXT_IMPORTER_EXTENSIONS = [
+    '.json',
+    '.md',
+    '.md',
+]
+
+ASMDEF_IMPORTER_EXTENSIONS = [
+    '.asmdef'
+]
+
 
 def _get_uuid(filename: str) -> str:
     return str(uuid.uuid3(uuid.NAMESPACE_DNS, filename)).replace('-', '')
+
 
 def _path_is_ignored(path: str, ignored_paths: List[str]) -> bool:
     for ignored_path in ignored_paths:
@@ -21,65 +41,85 @@ def _path_is_ignored(path: str, ignored_paths: List[str]) -> bool:
 
     return False
 
-def _get_file_paths(root_path: str, ignored_paths: List[str]) -> Dict[PathType, List[str]]:
+
+def _get_file_paths(root_path: str, ignored_paths: List[str]) -> Dict[ImporterType, List[str]]:
     all_paths = [path.replace('\\', '/') for path in glob.glob(root_path, recursive=True)]
-    paths_dict: Dict[PathType, List[str]] = {
-        PathType.CsScript: list(),
-        PathType.TextFile: list(),
-        PathType.Folder: list(),
+    paths_dict: Dict[ImporterType, List[str]] = {
+        ImporterType.Folder: list(),
+        ImporterType.Mono: list(),
+        ImporterType.Text: list(),
+        ImporterType.AsmDef: list(),
+        ImporterType.Default: list(),
     }
 
     for path in all_paths:
         if _path_is_ignored(path, ignored_paths):
             continue
-        
+
         if not (os.path.isfile(path)):
-            paths_dict[PathType.Folder].append(path)
-            continue
-        
-        if path[-3:] == '.cs':
-            paths_dict[PathType.CsScript].append(path)
+            paths_dict[ImporterType.Folder].append(path)
             continue
 
-        paths_dict[PathType.TextFile].append(path)
+        extension = os.path.splitext(path)[-1]
+
+        if extension in MONO_IMPORTER_EXTENSIONS:
+            paths_dict[ImporterType.Mono].append(path)
+            continue
+        elif extension in TEXT_IMPORTER_EXTENSIONS:
+            paths_dict[ImporterType.Text].append(path)
+            continue
+        elif extension in ASMDEF_IMPORTER_EXTENSIONS:
+            paths_dict[ImporterType.AsmDef].append(path)
+            continue
+
+        paths_dict[ImporterType.Default].append(path)
 
     return paths_dict
 
+
 def _get_meta_templates(templates_folder: str):
-    with open(f'{templates_folder}/cs_meta_template') as file:
-        cs_meta_template = file.read()
     with open(f'{templates_folder}/folder_meta_template') as file:
         folder_meta_template = file.read()
+    with open(f'{templates_folder}/mono_meta_template') as file:
+        cs_meta_template = file.read()
     with open(f'{templates_folder}/text_meta_template') as file:
         text_meta_template = file.read()
-    
+    with open(f'{templates_folder}/asmdef_meta_template') as file:
+        asmdef_meta_template = file.read()
+    with open(f'{templates_folder}/default_meta_template') as file:
+        default_meta_template = file.read()
+
     return {
-        PathType.CsScript: cs_meta_template,
-        PathType.TextFile: text_meta_template,
-        PathType.Folder: folder_meta_template
+        ImporterType.Folder: folder_meta_template,
+        ImporterType.Mono: cs_meta_template,
+        ImporterType.Text: text_meta_template,
+        ImporterType.AsmDef: asmdef_meta_template,
+        ImporterType.Default: default_meta_template,
     }
 
-def _generate_meta_files(paths_dict: Dict[PathType, List[str]], meta_templates: Dict[PathType, str]):
+
+def _generate_meta_files(paths_dict: Dict[ImporterType, List[str]], meta_templates: Dict[ImporterType, str]):
     for key, value in paths_dict.items():
-        temaplate = meta_templates[key]
+        template = meta_templates[key]
         for path in value:
             guid = _get_uuid(path)
             with open(f'{path}.meta', 'w', encoding='utf8') as file:
-                file.write(temaplate.format(guid))
+                file.write(template.format(guid))
+
 
 if __name__ == '__main__':
-    script_path_items = sys.argv[0].split('/')[:-1]
-    script_path_items.append('templates')
-    templates_folder = '/'.join(script_path_items)
+    r_script_path_items = sys.argv[0].split('/')[:-1]
+    r_script_path_items.append('templates')
+    r_templates_folder = '/'.join(r_script_path_items)
 
-    ignored_paths = [
-        r'.+\.meta', 
-        r'\.git\/.+', 
+    r_ignored_paths = [
+        r'.+\.meta',
+        r'\.git\/.+',
         r'.*\/?upm-preparator.*',
         r'.*\/?temp.*',
     ]
 
-    paths_dict = _get_file_paths('**', ignored_paths)
-    templates = _get_meta_templates(templates_folder)
+    r_paths_dict = _get_file_paths('**', r_ignored_paths)
+    r_templates = _get_meta_templates(r_templates_folder)
 
-    _generate_meta_files(paths_dict, templates)
+    _generate_meta_files(r_paths_dict, r_templates)
