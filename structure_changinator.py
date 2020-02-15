@@ -20,7 +20,12 @@ def _get_paths(root_path: str, ignored_paths: List[str], files_int_prior: bool =
         paths.append(path)
 
     if files_int_prior:
-        paths.sort(key=lambda x: not os.path.isfile(x))
+        files = [for path in paths if os.path.isfile(path)]
+        dirs = [for path in paths if os.path.isdir(path)]
+        dirs.sort(key=lambda x: x.count('/'))
+        dirs.reverse()
+        
+        paths = files + dirs
 
     return paths
 
@@ -56,7 +61,6 @@ if __name__ == '__main__':
     ]
 
     paths_to_delete = _get_paths('**', ignored_to_delete_paths, True)
-    print(paths_to_delete)
     _delete_paths(paths_to_delete)
 
     ignored_to_move_paths = [
