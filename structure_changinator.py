@@ -52,6 +52,7 @@ if __name__ == '__main__':
     ]
 
     paths_to_delete = _get_paths('**', ignored_to_delete_paths)
+    print(paths_to_delete)
     _delete_paths(paths_to_delete)
 
     ignored_to_move_paths = [
