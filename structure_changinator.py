@@ -10,7 +10,7 @@ def _path_is_ignored(path: str, ignored_paths: List[str]) -> bool:
             return True
     return False
 
-def _get_paths(root_path: str, ignored_paths: List[str], files_int_prior: bool = False) -> List[str]:
+def _get_paths(root_path: str, ignored_paths: List[str], files_in_prior: bool = False, files_only: bool = False) -> List[str]:
     all_paths = [path.replace('\\', '/') for path in glob.glob(root_path, recursive=True)]
     paths = list()
 
@@ -19,13 +19,16 @@ def _get_paths(root_path: str, ignored_paths: List[str], files_int_prior: bool =
             continue
         paths.append(path)
 
-    if files_int_prior:
+    if files_in_prior:
         files = [path for path in paths if os.path.isfile(path)]
         dirs = [path for path in paths if os.path.isdir(path)]
         dirs.sort(key=lambda x: x.count('/'))
         dirs.reverse()
 
         paths = files + dirs
+
+    if files_only:
+        paths = [path for path in paths if os.path.isfile(path)]
 
     return paths
 
@@ -45,6 +48,8 @@ def _move_from_package_folder_to_root(package_folder: str, paths_to_move: List[s
         if len(new_path) > 0:
             if len(os.path.dirname(new_path)) > 0:
                 os.makedirs(os.path.dirname(new_path), exist_ok=True)
+            print(f'{old_path}; Exists: {os.path.exists(old_path)}')
+            print(f'{new_path}; Exists: {os.path.exists(new_path)}')
             os.replace(old_path, new_path)
 
 if __name__ == '__main__':
@@ -62,7 +67,7 @@ if __name__ == '__main__':
         package_folder_regex
     ]
 
-    paths_to_delete = _get_paths('**', ignored_to_delete_paths, True)
+    paths_to_delete = _get_paths('**', ignored_to_delete_paths, files_in_prior=True)
     _delete_paths(paths_to_delete)
 
     ignored_to_move_paths = [
@@ -70,5 +75,5 @@ if __name__ == '__main__':
         r'.*\/?version\.json',
     ]
 
-    paths_to_move = _get_paths(f'{package_folder}/**', ignored_to_move_paths)
+    paths_to_move = _get_paths(f'{package_folder}/**', ignored_to_move_paths, files_only=True)
     _move_from_package_folder_to_root(package_folder, paths_to_move)
