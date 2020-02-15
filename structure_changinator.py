@@ -10,7 +10,7 @@ def _path_is_ignored(path: str, ignored_paths: List[str]) -> bool:
             return True
     return False
 
-def _get_paths(root_path: str, ignored_paths: List[str]) -> List[str]:
+def _get_paths(root_path: str, ignored_paths: List[str], files_int_prior: bool = False) -> List[str]:
     all_paths = [path.replace('\\', '/') for path in glob.glob(root_path, recursive=True)]
     paths = list()
 
@@ -18,6 +18,10 @@ def _get_paths(root_path: str, ignored_paths: List[str]) -> List[str]:
         if _path_is_ignored(path, ignored_paths):
             continue
         paths.append(path)
+
+    if files_int_prior:
+        paths.sort(key=lambda x: os.path.isfile(x))
+
     return paths
 
 def _delete_paths(paths_to_delete: List[str]) -> None:
@@ -51,7 +55,7 @@ if __name__ == '__main__':
         package_folder_regex
     ]
 
-    paths_to_delete = _get_paths('**', ignored_to_delete_paths)
+    paths_to_delete = _get_paths('**', ignored_to_delete_paths, True)
     print(paths_to_delete)
     _delete_paths(paths_to_delete)
 
