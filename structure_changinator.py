@@ -43,6 +43,7 @@ def _move_from_package_folder_to_root(package_folder: str, paths_to_move: List[s
     for old_path in paths_to_move:
         new_path = old_path.replace(f'{package_folder}/', '')
         if len(new_path) > 0:
+            print(new_path, old_path)
             os.makedirs(os.path.dirname(new_path), exist_ok=True)
             os.replace(old_path, new_path)
 
