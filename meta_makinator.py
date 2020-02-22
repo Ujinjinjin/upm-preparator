@@ -30,8 +30,14 @@ ASMDEF_IMPORTER_EXTENSIONS = [
 ]
 
 
-def _get_uuid(filename: str) -> str:
-    return str(uuid.uuid3(uuid.NAMESPACE_DNS, filename)).replace('-', '')
+def _get_uuid(filename: str, project_id: str) -> str:
+    return str(uuid.uuid3(uuid.NAMESPACE_DNS, f'{project_id}/{filename}')).replace('-', '')
+
+
+def _get_project_id(package_json_path: str) -> str:
+    with open(package_json_path, 'r', encoding='utf8') as file:
+        package_dict = json.load(file)
+        return package_dict['name']
 
 
 def _path_is_ignored(path: str, ignored_paths: List[str]) -> bool:
@@ -98,11 +104,11 @@ def _get_meta_templates(templates_folder: str):
     }
 
 
-def _generate_meta_files(paths_dict: Dict[ImporterType, List[str]], meta_templates: Dict[ImporterType, str]):
+def _generate_meta_files(paths_dict: Dict[ImporterType, List[str]], meta_templates: Dict[ImporterType, str], project_id: str):
     for key, value in paths_dict.items():
         template = meta_templates[key]
         for path in value:
-            guid = _get_uuid(path)
+            guid = _get_uuid(path, project_id)
             with open(f'{path}.meta', 'w', encoding='utf8') as file:
                 file.write(template.format(guid))
 
@@ -111,6 +117,9 @@ if __name__ == '__main__':
     r_script_path_items = sys.argv[0].split('/')[:-1]
     r_script_path_items.append('templates')
     r_templates_folder = '/'.join(r_script_path_items)
+    r_package_json_path = sys.argv[1]
+    r_project_id = _get_project_id(r_package_json_path)
+
 
     r_ignored_paths = [
         r'.+\.meta',
@@ -122,4 +131,4 @@ if __name__ == '__main__':
     r_paths_dict = _get_file_paths('**', r_ignored_paths)
     r_templates = _get_meta_templates(r_templates_folder)
 
-    _generate_meta_files(r_paths_dict, r_templates)
+    _generate_meta_files(r_paths_dict, r_templates, r_project_id)
