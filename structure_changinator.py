@@ -48,8 +48,6 @@ def _move_from_package_folder_to_root(package_folder: str, paths_to_move: List[s
         if len(new_path) > 0:
             if len(os.path.dirname(new_path)) > 0:
                 os.makedirs(os.path.dirname(new_path), exist_ok=True)
-            print(f'{old_path}; Exists: {os.path.exists(old_path)}')
-            print(f'{new_path}; Exists: {os.path.exists(new_path)}')
             os.replace(old_path, new_path)
 
 if __name__ == '__main__':
